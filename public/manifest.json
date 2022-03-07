@@ -1,0 +1,35 @@
+{
+  "main.css": "theme/main.css",
+  "main.js": "theme/main.js",
+  "node_modules_web-vitals_dist_web-vitals_js.js": "theme/node_modules_web-vitals_dist_web-vitals_js.js",
+  "entrypoints": {
+    "main": {
+      "assets": {
+        "css": [
+          "theme/main.css"
+        ],
+        "js": [
+          "theme/main.js"
+        ]
+      }
+    }
+  },
+  "short_name": "Seedco",
+  "name": "Seedco Data Sychronisation",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo.jpg",
+      "type": "image/jpg",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "theme/dist/index.js",
+  "display": "browser",
+  "theme_color": "#000000",
+  "background_color": "red"
+}
