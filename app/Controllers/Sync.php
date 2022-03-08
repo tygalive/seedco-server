@@ -7,8 +7,7 @@ use Exception;
 
 class Sync extends BaseController
 {
-
-    private $fields =  array("ICILOC.ITEMNO", "LOCATION", "QTYONHAND", "CURRENCY", "UNITPRICE");
+    private $fields = array("ICILOC.ITEMNO", "LOCATION", "QTYONHAND", "CURRENCY", "UNITPRICE");
 
     private $rows = array();
 
@@ -27,7 +26,7 @@ class Sync extends BaseController
             \remoteGetContent($site, array($this, "handleResponse"));
 
             //handle stock
-            \remoteGetContent($site, array($this, "handleResponse"), $this->rows, "synchronise");
+            \remoteGetContent($site, array($this, "handleResponse"), array_values($this->rows), "synchronise");
         }
     }
 
@@ -43,32 +42,35 @@ class Sync extends BaseController
                 case "database":
                     #normalise and query database
 
-                    $placeholders  = array(
-                        "{{fields}}" => "'" . implode("','", $this->fields) . "'",
+                    $placeholders = array(
+                        "{{fields}}" => implode(", ", $this->fields),
                     );
 
                     $data = array_map(function ($database) use ($placeholders) {
-                        $database["sql"] =  strtr($database["sql"], $placeholders);
+                        $database["sql"] = strtr($database["sql"], $placeholders);
                         return $database;
                     }, $data);
 
                     $this->rows = array();
                     foreach ($data as $database) {
                         $connection = config('Database')->default;
-                        $connection["database"] = $database["database"];
 
                         #query data
                         try {
                             $db = db_connect($connection);
-                            $query =   $db->query($database["sql"]);
+                            $db->setDatabase($database["database"]);
+                            $query = $db->query($database["sql"]);
 
                             #map data
                             foreach ($query->getResult() as $row) {
-                                $this->rows[] = array(
-                                    "quantity" => intval($row->QTYONHAND),
-                                    "price" => floatval($row->UNITPRICE),
+
+                                $sku = trim($row->ITEMNO);
+
+                                $this->rows[$sku] = array(
+                                    "quantity" => ($this->rows[$sku]["quantity"] ?? 0) + intval($row->QTYONHAND),
+                                    "price" => max(($this->rows[$sku]["price"] ?? 0), floatval($row->UNITPRICE)),
                                     "location" => trim($row->LOCATION),
-                                    "sku" => trim($row->ITEMNO)
+                                    "sku" => $sku,
                                 );
                             }
                         } catch (\Exception $e) {

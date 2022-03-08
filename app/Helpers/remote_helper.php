@@ -12,7 +12,7 @@
  * @param bool $encrpt
  * @return void|array|string
  */
-function remoteGetContent(string $url,  $callback = "boolval", array|string $data = array(), string $action = "environment", bool  $encrypt = true)
+function remoteGetContent(string $url,  $callback = "boolval", $data = array(), string $action = "environment", bool  $encrypt = true)
 {
 
     $username = getenv("remote.email");
@@ -60,7 +60,7 @@ function remoteGetContent(string $url,  $callback = "boolval", array|string $dat
  * @param boolean $encrypt
  * @return string
  */
-function encryptContent(string $key, array|string $content = array(), bool $encrypt = true): array|string
+function encryptContent(string $key, $content = array(), bool $encrypt = true)
 {
 
     if ($encrypt && function_exists("openssl_encrypt") && function_exists("openssl_decrypt")) {
@@ -88,7 +88,7 @@ function encryptContent(string $key, array|string $content = array(), bool $encr
  * @param string $content
  * @return array|string
  */
-function decryptContent(String $key, array|string $content = ""): array|string
+function decryptContent(String $key,  $content = "")
 {
     if (function_exists("openssl_encrypt") && function_exists("openssl_decrypt")) {
         $content = json_decode($content, true);
