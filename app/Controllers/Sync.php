@@ -26,7 +26,7 @@ class Sync extends BaseController
             \remoteGetContent($site, array($this, "handleResponse"));
 
             //handle stock
-            \remoteGetContent($site, array($this, "handleResponse"), array_values($this->rows), "synchronise");
+            \remoteGetContent($site, array($this, "handleResponse"), $this->rows, "synchronise");
         }
     }
 
@@ -63,14 +63,11 @@ class Sync extends BaseController
 
                             #map data
                             foreach ($query->getResult() as $row) {
-
-                                $sku = trim($row->ITEMNO);
-
-                                $this->rows[$sku] = array(
-                                    "quantity" => ($this->rows[$sku]["quantity"] ?? 0) + intval($row->QTYONHAND),
-                                    "price" => max(($this->rows[$sku]["price"] ?? 0), floatval($row->UNITPRICE)),
+                                $this->rows[] = array(
+                                    "quantity" => intval($row->QTYONHAND),
+                                    "price" => floatval($row->UNITPRICE),
                                     "location" => trim($row->LOCATION),
-                                    "sku" => $sku,
+                                    "sku" => trim($row->ITEMNO),
                                 );
                             }
                         } catch (\Exception $e) {

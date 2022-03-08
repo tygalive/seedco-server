@@ -1,7 +1,7 @@
 {
-	"name": "codeigniter4/framework",
+	"name": "quatrohaus/seedco-server",
 	"type": "project",
-	"description": "The CodeIgniter framework v4",
+	"description": "Seedco server access",
 	"homepage": "https://codeigniter.com",
 	"license": "MIT",
 	"authors": [
