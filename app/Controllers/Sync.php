@@ -15,15 +15,15 @@ class Sync extends BaseController
         define("EXECUTION_INTERVAL", intval(getenv("window.interval") ?:1));
 
         #max execute 110% of window period max
-        set_time_limit(EXECUTION_WINDOW * 1.5);
+        set_time_limit(max(EXECUTION_WINDOW, ini_get('max_execution_time')) * 1.5);
 
         $start = time();
 
         do {
-            $sites =networkStores() ;
+            $sites = networkStores() ;
 
             foreach ($sites as $site) {
-                messageAdd("network", $sites);
+                messageAdd("network", networkGetStore());
 
                 $siteEntity = new Site($site);
 
