@@ -135,8 +135,6 @@ nb-configuration.xml
 
 *.zip
 
-rsync.sh
-
 #Node packages
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -164,3 +162,7 @@ yarn-error.log*
 
 system
 writable/data/
+
+#terminal files
+*.sh
+*.bat
