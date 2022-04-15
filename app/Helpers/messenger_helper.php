@@ -10,7 +10,7 @@ $messages = array();
  * @param mixed $data
  * @return void
  */
-function messageAdd(string $key, mixed $data)
+function messageAdd(string $key, $data)
 {
     global $messages;
    
