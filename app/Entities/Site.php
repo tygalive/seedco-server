@@ -53,9 +53,7 @@ class Site extends Entity
      */
     public function handleLocations($data)
     {
-        #save to cache
-
-        messageAdd("environment", true);
+        #No action to perform
     }
 
     /**
