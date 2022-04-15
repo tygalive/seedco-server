@@ -2,91 +2,46 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Database\BaseConnection;
-use Exception;
+use App\Entities\Site;
 
 class Sync extends BaseController
 {
-    private $fields = array("ICILOC.ITEMNO", "LOCATION", "QTYONHAND", "CURRENCY", "UNITPRICE");
-
-    private $rows = array();
-
     public function index()
     {
-        helper('remote');
+        helper(array('remote',"messenger", "network", "encrypt"));
 
-        $content = file_get_contents(WRITEPATH . "data/sites.json");
-        $sites = json_decode($content, true);
+        #execution window of php script
+        define("EXECUTION_WINDOW", intval(getenv("window.period") ?: 1));
+        define("EXECUTION_INTERVAL", intval(getenv("window.interval") ?:1));
 
-        foreach ($sites["urls"] as $site) {
-            //sync sites
-            \remoteGetContent($site, array($this, "handleResponse"), $sites, "network");
+        #max execute 110% of window period max
+        set_time_limit(EXECUTION_WINDOW * 1.5);
 
-            //get locations
-            \remoteGetContent($site, array($this, "handleResponse"));
+        $start = time();
 
-            //handle stock
-            \remoteGetContent($site, array($this, "handleResponse"), $this->rows, "synchronise");
-        }
-    }
+        do {
+            $sites =networkStores() ;
 
-    public function handleResponse($response)
-    {
+            foreach ($sites as $site) {
+                messageAdd("network", $sites);
 
-        foreach ($response as $action => $data) {
-            switch ($action) {
-                case "locations":
-                    #save to cache
+                $siteEntity = new Site($site);
 
-                    break;
-                case "database":
-                    #normalise and query database
+                do {
+                    remoteGetContent($siteEntity->link, $siteEntity->encrypt);
+                } while (messageHasContent());
 
-                    $placeholders = array(
-                        "{{fields}}" => implode(", ", $this->fields),
-                    );
-
-                    $data = array_map(function ($database) use ($placeholders) {
-                        $database["sql"] = strtr($database["sql"], $placeholders);
-                        return $database;
-                    }, $data);
-
-                    $this->rows = array();
-                    foreach ($data as $database) {
-                        $connection = config('Database')->default;
-
-                        #query data
-                        try {
-                            $db = db_connect($connection);
-                            $db->setDatabase($database["database"]);
-                            $query = $db->query($database["sql"]);
-
-                            #map data
-                            foreach ($query->getResult() as $row) {
-                                $this->rows[] = array(
-                                    "quantity" => intval($row->QTYONHAND),
-                                    "price" => floatval($row->UNITPRICE),
-                                    "location" => trim($row->LOCATION),
-                                    "sku" => trim($row->ITEMNO),
-                                );
-                            }
-                        } catch (\Exception $e) {
-                        } finally {
-                            if ($db instanceof BaseConnection) {
-                                $db->close();
-                            }
-                        }
-                    }
-                    break;
-                case "network":
-                    $content = file_get_contents(WRITEPATH . "data/sites.json");
-                    $sites = json_decode($content, true);
-
-                    if ($data["time"] > $sites["time"]) {
-                        @file_put_contents(WRITEPATH . "data/sites.json", json_encode($data, JSON_PRETTY_PRINT));
-                    }
-                    break;
+                $siteEntity->destroy();
             }
-        }
+
+            $wait  = ((time() - $start) % EXECUTION_INTERVAL) * EXECUTION_INTERVAL;
+
+            #is the wait worth it
+            if (time() + $wait < $start + EXECUTION_WINDOW) {
+                sleep($wait);
+            } else {
+                break;
+            }
+        } while (time() < $start + EXECUTION_WINDOW);
     }
 }
