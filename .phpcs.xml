@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="Seedco Server Standard" namespace="Seedco/Server">
-    <description>Coding Standards for the Seedco Server and Php 7.3</description>
+    <description>Coding Standards for the Seedco Server and Php 7.4</description>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/system/*</exclude-pattern>
@@ -9,7 +9,7 @@
     <exclude-pattern>*/app/Views/errors/*</exclude-pattern>
     <exclude-pattern>*/app/Database/Migrations/*</exclude-pattern>
 
-    <config name="testVersion" value="7.3-"/>
+    <config name="testVersion" value="7.4-"/>
 
     <rule ref="CodeIgniter4"/>
     <rule ref="PHPCompatibility">

@@ -20,7 +20,7 @@
 	],
 	"config": {
 		"platform": {
-			"php": "7.3"
+			"php": "7.4"
 		},
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
@@ -28,14 +28,8 @@
 		"process-timeout": 0
 	},
 	"require": {
-		"php": ">=7.3",
-		"ext-curl": "*",
-		"ext-intl": "*",
-		"ext-json": "*",
-		"ext-mbstring": "*",
-		"kint-php/kint": "^3.3",
-		"laminas/laminas-escaper": "^2.6",
-		"psr/log": "^1.1",
+		"php": ">=7.4",
+		"codeigniter4/framework": "^4.0",
 		"symfony/polyfill-php80": "^1.25",
 		"symfony/polyfill-php81": "^1.25",
 		"lodash-php/lodash-php": "^0.0.7"
@@ -46,7 +40,6 @@
 		"fakerphp/faker": "^1.9",
 		"mikey179/vfsstream": "^1.6",
 		"phpunit/phpunit": "^9.1",
-		"predis/predis": "^1.1",
 		"squizlabs/php_codesniffer": "^3.3",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.2"
 	},
@@ -54,17 +47,16 @@
 		"ext-fileinfo": "Improves mime type detection for files"
 	},
 	"autoload": {
-		"psr-4": {
-			"CodeIgniter\\": "system/"
-		},
 		"exclude-from-classmap": [
 			"**/Database/Migrations/**"
 		]
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\Support\\": "tests/_support"
+		}
+	},
 	"scripts": {
-		"post-update-cmd": [
-			"CodeIgniter\\ComposerScripts::postUpdate"
-		],
 		"qc": [
 			"@phpcs",
 			"@test"
