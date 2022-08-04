@@ -159,12 +159,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-system
 writable/data/
 
 #terminal files
 *.sh
 *.bat
-
-*.lock
-.composer_compiled_assets

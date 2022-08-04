@@ -11,7 +11,7 @@ class StockColumns extends Migration
 
         // Stock.
 		$fields = array(
-			'ICILOC.ITEMNO' => array(
+			'ITEMNO' => array(
 				'type' => 'TEXT',
 			),
 			'LOCATION' => array(
@@ -30,11 +30,11 @@ class StockColumns extends Migration
 
 		$this->forge->addField($fields);
         
-		$this->forge->createTable("stocks", true, array('ENGINE' => 'InnoDB'));
+		$this->forge->createTable("ICILOC", true, array('ENGINE' => 'InnoDB'));
     }
 
     public function down()
     {
-        $this->forge->dropTable('stocks');
+        $this->forge->dropTable('ICILOC');
     }
 }
