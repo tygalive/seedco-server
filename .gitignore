@@ -91,7 +91,6 @@ composer.lock
 # Npm
 #-------------------------
 node_modules/
-package-lock.json
 
 #-------------------------
 # IDE / Development Files
@@ -166,3 +165,6 @@ writable/data/
 #terminal files
 *.sh
 *.bat
+
+*.lock
+.composer_compiled_assets

@@ -1,90 +1,117 @@
 <?php
 
-$messages = array();
+/**
+ * Messenger Helper
+ */
+
+$messages = [];
 
 /**
  * Add message to queue
  *
- * @global array $messages
- * @param string $key
- * @param mixed $data
+ * @param string        $key  Key.
+ * @param mixed|boolean $data Data.
+ *
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
  * @return void
  */
-function messageAdd(string $key, $data)
+function message_add(string $key, $data):void
 {
-    global $messages;
-   
-    $messages[$key] = $data;
+	global $messages;
+
+	$messages[$key] = $data;
 }
 
 /**
  * Get queued message
  *
- * @global array $messages
- * @param string $key
- * @return mixed|bool
+ * @param string $key Key.
+ *
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
+ * @return mixed|boolean
  */
-function messageGet(string $key)
+function message_get(string $key)
 {
-    global $messages;
+	global $messages;
 
-    return $messages[$key] ?? false;
+	return $messages[$key] ?? false;
 }
 
 /**
  * Get all queued messages
  *
- * @global array $messages
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
  * @return array
  */
-function messageGetAll()
+function message_get_all():array
 {
-    global $messages;
+	global $messages;
 
-    $content = $messages ?: array();
+	$content = $messages ?: [];
 
-    $messages = array();
+	$messages = [];
 
-    return $content;
+	return $content;
 }
 
 /**
- * Get whether messanger has content
+ * Get whether messenger has content
  *
- * @return bool
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
+ * @return boolean
  */
-function messageHasContent()
+function message_has_content():bool
 {
-    global $messages;
+	global $messages;
 
-    return !empty($messages ?? array());
+	return ! empty($messages ?? []);
 }
 
 /**
  * Delete queued message
  *
- * @global array $messages
- * @param string $key
+ * @param string $key Key.
+ *
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
  * @return void
  */
-function messageDelete(string $key)
+function message_delete(string $key):void
 {
-    global $messages;
+	global $messages;
 
-    if (isset($messages[$key])) {
-        unset($messages[$key]);
-    }
+	if (isset($messages[$key]))
+	{
+		unset($messages[$key]);
+	}
 }
 
 /**
- * Get and remove the first messege
+ * Get and remove the first message
  *
- * @global array $messages
- * @return mixed|bool
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ *
+ * @return mixed|boolean
  */
-function messageShift()
+function message_shift()
 {
-    global $messages;
+	global $messages;
 
-    return array_shift($messages) ?? false;
+	return array_shift($messages) ?? false;
 }

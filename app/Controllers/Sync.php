@@ -4,44 +4,69 @@ namespace App\Controllers;
 
 use App\Entities\Site;
 
+/**
+ * Synchronization Controller Class
+ *
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ */
 class Sync extends BaseController
 {
-    public function index()
-    {
-        helper(array('remote',"messenger", "network", "encrypt"));
 
-        #execution window of php script
-        define("EXECUTION_WINDOW", intval(getenv("window.period") ?: 1));
-        define("EXECUTION_INTERVAL", intval(getenv("window.interval") ?:1));
+	/**
+	 * Handle synchronisation
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function index()
+	{
+		helper(['remote', 'messenger', 'network', 'encrypt']);
 
-        #max execute 110% of window period max
-        set_time_limit(max(EXECUTION_WINDOW, ini_get('max_execution_time')) * 1.5);
+		// execution window of php script
+		define('EXECUTION_WINDOW', intval(getenv('window.period') ?: 1));
+		define('EXECUTION_INTERVAL', intval(getenv('window.interval') ?: 1));
 
-        $start = time();
+		// max execute 110% of window period max
+		set_time_limit(max(EXECUTION_WINDOW, ini_get('max_execution_time')) * 1.5);
 
-        do {
-            $sites = networkStores() ;
+		$start = time();
 
-            foreach ($sites as $site) {
-                messageAdd("network", networkGetStore());
+		do
+		{
+			$sites = network_stores();
 
-                $siteEntity = new Site($site);
+			foreach ($sites as $site)
+			{
+				message_add('network', network_get_store());
 
-                do {
-                    remoteGetContent($siteEntity->link, $siteEntity->encrypt);
-                } while (messageHasContent());
+				$siteEntity = new Site($site);
 
-                $siteEntity->destroy();
-            }
+				do
+				{
+					remote_get_content($siteEntity->link, $siteEntity->encrypt);
+				}
+				while (message_has_content());
 
-            $wait  = ((time() - $start) % EXECUTION_INTERVAL) * EXECUTION_INTERVAL;
+				$siteEntity->destroy();
+			}
 
-            #is the wait worth it
-            if (time() + $wait < $start + EXECUTION_WINDOW) {
-                sleep($wait);
-            } else {
-                break;
-            }
-        } while (time() < $start + EXECUTION_WINDOW);
-    }
+			$wait = ((time() - $start) % EXECUTION_INTERVAL) * EXECUTION_INTERVAL;
+
+			// is the wait worth it's salt
+			if (time() + $wait < $start + EXECUTION_WINDOW)
+			{
+				sleep($wait);
+			}
+			else
+			{
+				break;
+			}
+		}
+		while (time() < $start + EXECUTION_WINDOW);
+	}
 }

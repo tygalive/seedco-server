@@ -5,118 +5,170 @@ namespace App\Entities;
 use CodeIgniter\Entity\Entity;
 use CodeIgniter\Database\BaseConnection;
 
+/**
+ * Site Entity
+ *
+ * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+ * @since   1.0.0
+ * @version 1.0.0
+ */
 class Site extends Entity
 {
-    public function __construct(array $data = null)
-    {
-        parent::__construct($data);
 
-        $this->init();
-    }
+	/**
+	 * Initialize
+	 *
+	 * @param array|null $data Data.
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 */
+	public function __construct(array $data = null)
+	{
+		parent::__construct($data);
 
-    /**
-     * Fields to fetch from the database
-     *
-     * @var array
-     */
-    private $fields = array("ICILOC.ITEMNO", "LOCATION", "QTYONHAND", "CURRENCY", "UNITPRICE");
+		$this->init();
+	}
 
-    /**
-     * Register event listeners
-     *
-     * @return void
-     */
-    public function init()
-    {
-        \CodeIgniter\Events\Events::on("sync_locations", array($this, "handleLocations"));
-        \CodeIgniter\Events\Events::on("sync_database", array($this, "handleDatabase"));
-        \CodeIgniter\Events\Events::on("sync_network", array($this, "handleNetwork"));
-    }
+	/**
+	 * Fields to fetch from the database
+	 *
+	 * @var array
+	 */
+	private $fields = [
+		'ICILOC.ITEMNO',
+		'LOCATION',
+		'QTYONHAND',
+		'CURRENCY',
+		'UNITPRICE',
+	];
 
-    /**
-     * Clear all event listeners
-     *
-     * @return void
-     */
-    public function destroy()
-    {
-        \CodeIgniter\Events\Events::removeAllListeners("sync_locations");
-        \CodeIgniter\Events\Events::removeAllListeners("sync_database");
-        \CodeIgniter\Events\Events::removeAllListeners("sync_network");
-    }
+	/**
+	 * Register event listeners
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function init():void
+	{
+		\CodeIgniter\Events\Events::on('sync_locations', [$this, 'handleLocations']);
+		\CodeIgniter\Events\Events::on('sync_database', [$this, 'handleDatabase']);
+		\CodeIgniter\Events\Events::on('sync_network', [$this, 'handleNetwork']);
+	}
 
-    /**
-     * Request environment from site
-     *
-     * @param mixed $data
-     * @return void
-     */
-    public function handleLocations($data)
-    {
-        #No action to perform
-    }
+	/**
+	 * Clear all event listeners
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function destroy():void
+	{
+		\CodeIgniter\Events\Events::removeAllListeners('sync_locations');
+		\CodeIgniter\Events\Events::removeAllListeners('sync_database');
+		\CodeIgniter\Events\Events::removeAllListeners('sync_network');
+	}
 
-    /**
-     * Prepare local stock levels for remote site
-     *
-     * @param mixed $data
-     * @return void
-     */
-    public function handleDatabase($data)
-    {
-        #normalise and query database
+	/**
+	 * Request environment from site
+	 *
+	 * @param mixed|false $data Data.
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function handleLocations($data):void
+	{
+		#No action to perform
+	}
 
-        $placeholders = array(
-            "{{fields}}" => implode(", ", $this->fields),
-        );
+	/**
+	 * Prepare local stock levels for remote site
+	 *
+	 * @param mixed|false $data Data.
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function handleDatabase($data):void
+	{
+		#normalize and query database
 
-        $data = array_map(function ($database) use ($placeholders) {
-            $database["sql"] = strtr($database["sql"], $placeholders);
-            return $database;
-        }, $data);
+		$placeholders = [
+			'{{fields}}' => implode(', ', $this->fields),
+		];
 
-        $rows = array();
-        foreach ($data as $database) {
-            $connection = config('Database')->default;
+		$data = array_map(function ($database) use ($placeholders) {
+			$database['sql'] = strtr($database['sql'], $placeholders);
+			return $database;
+		}, $data);
 
-            #query data
-            try {
-                $db = db_connect($connection);
+		$rows = [];
+		foreach ($data as $database)
+		{
+			$connection = config('Database')->default;
 
-                #set database as requested by remote site
-                $db->setDatabase($database["database"]);
-                $query = $db->query($database["sql"]);
+			#query data
+			try
+			{
+				$db = db_connect($connection);
 
-                #map data
-                foreach ($query->getResult() as $row) {
-                    $rows[] = array(
-                        "quantity" => intval($row->QTYONHAND),
-                        "price" => floatval($row->UNITPRICE),
-                        "location" => trim($row->LOCATION),
-                        "sku" => trim($row->ITEMNO),
-                    );
-                }
-            } catch (\Exception $e) {
-            } finally {
-                if ($db instanceof BaseConnection) {
-                    $db->close();
-                }
-            }
-        }
+				#set database as requested by remote site
+				$db->setDatabase($database['database']);
+				$query = $db->query($database['sql']);
 
-        messageAdd("synchronise", $rows);
-    }
+				#map data
+				foreach ($query->getResult() as $row)
+				{
+					$rows[] = [
+						'quantity' => intval($row->QTYONHAND),
+						'price'    => floatval($row->UNITPRICE),
+						'location' => trim($row->LOCATION),
+						'sku'      => trim($row->ITEMNO),
+					];
+				}
+			}
+			catch (\Exception $e)
+			{
+			} finally {
+				if ($db instanceof BaseConnection)
+				{
+					$db->close();
+				}
+			}
+		}
 
-    /**
-     * Handle network sites
-     *
-     * @param mixed $data
-     * @return void
-     */
-    public function handleNetwork($data)
-    {
-        networkSetStore($data);
+		message_add('synchronise', $rows);
+	}
 
-        messageAdd("environment", true);
-    }
+	/**
+	 * Handle network sites
+	 *
+	 * @param mixed|false $data Data.
+	 *
+	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return void
+	 */
+	public function handleNetwork($data):void
+	{
+		network_set_store($data);
+
+		message_add('environment', true);
+	}
 }
