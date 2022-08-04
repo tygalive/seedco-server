@@ -15,7 +15,7 @@ class Sync extends BaseController
 {
 
 	/**
-	 * Handle synchronisation
+	 * Handle synchronization
 	 *
 	 * @author  Richard Muvirimi <rich4rdmuvirimi@gmail.com>
 	 * @since   1.0.0

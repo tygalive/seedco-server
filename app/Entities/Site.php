@@ -4,6 +4,8 @@ namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
 use CodeIgniter\Database\BaseConnection;
+use CodeIgniter\Events\Events;
+use Exception;
 
 /**
  * Site Entity
@@ -55,9 +57,9 @@ class Site extends Entity
 	 */
 	public function init():void
 	{
-		\CodeIgniter\Events\Events::on('sync_locations', [$this, 'handleLocations']);
-		\CodeIgniter\Events\Events::on('sync_database', [$this, 'handleDatabase']);
-		\CodeIgniter\Events\Events::on('sync_network', [$this, 'handleNetwork']);
+		Events::on('sync_locations', [$this, 'handleLocations']);
+		Events::on('sync_database', [$this, 'handleDatabase']);
+		Events::on('sync_network', [$this, 'handleNetwork']);
 	}
 
 	/**
@@ -71,9 +73,9 @@ class Site extends Entity
 	 */
 	public function destroy():void
 	{
-		\CodeIgniter\Events\Events::removeAllListeners('sync_locations');
-		\CodeIgniter\Events\Events::removeAllListeners('sync_database');
-		\CodeIgniter\Events\Events::removeAllListeners('sync_network');
+		Events::removeAllListeners('sync_locations');
+		Events::removeAllListeners('sync_database');
+		Events::removeAllListeners('sync_network');
 	}
 
 	/**
@@ -141,7 +143,7 @@ class Site extends Entity
 					];
 				}
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 			} finally {
 				if ($db instanceof BaseConnection)

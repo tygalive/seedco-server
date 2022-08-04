@@ -4,6 +4,10 @@
  * Remote Helper
  */
 
+use CodeIgniter\Events\Events;
+use Config\Services;
+use \CodeIgniter\HTTP\Response;
+
 /**
  * Fetch and push remote content
  *
@@ -22,7 +26,7 @@ function remote_get_content(string $url, bool $encrypt = true)
 	$password = getenv('remote.password');
 	$key      = base64_encode($username . ':' . $password);
 
-	$client = \Config\Services::curlrequest();
+	$client = Services::curlrequest();
 	$client->setAuth($username, $password);
 	$client->setHeader('User-Agent', 'Seedco Server');
 
@@ -38,13 +42,13 @@ function remote_get_content(string $url, bool $encrypt = true)
 		/**
 		 * Http response
 		 *
-		 * @var \CodeIgniter\HTTP\Response $response
+		 * @var Response $response
 		 */
 		$response = $client->post($url, [
 			'form_params' => $message,
 		]);
 	}
-	catch (\Exception $e)
+	catch (Exception $e)
 	{
 		if ($encrypt)
 		{
@@ -63,7 +67,7 @@ function remote_get_content(string $url, bool $encrypt = true)
 			{
 				foreach ($response as $action => $data)
 				{
-					\CodeIgniter\Events\Events::trigger('sync_' . $action, $data);
+					Events::trigger('sync_' . $action, $data);
 				}
 			}
 		}
