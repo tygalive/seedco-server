@@ -65,25 +65,32 @@ function encrypt_content(string $key, $content = [], bool $encrypt = true):strin
  */
 function decrypt_content(string $key, string $content = '')
 {
-	if (encrypt_supported())
-	{
-		$content = json_decode($content, true);
+    if (encrypt_supported())
+    {
+        $content = json_decode($content, true);
 
-		#if json then data is not encrypted
-		if (! preg_match('/^[{\[].*[}\]]$/', $content['data']))
-		{
-			$key = md5($key);
+        #if json then data is not encrypted
+        if ($content !== null) {
+            #if json then data is not encrypted
+            if (! preg_match('/^[{\[].*[}\]]$/', $content['data']))
+            {
+                $key = md5($key);
 
-			$iv = encryption_iv($key);
+                $iv = encryption_iv($key);
 
-			#decrypt data
-			$content = openssl_decrypt($content['data'], 'aes-256-cbc', $key, 0, $iv);
-			$content = json_decode($content, true);
-		}
-	}
+                #decrypt data
+                $content = openssl_decrypt($content['data'], 'aes-256-cbc', $key, 0, $iv);
+                $content = json_decode($content, true);
+            }
+        } else {
+            # Handle the case where $content is null here
+            $content = [];
+        }
+    }
 
-	return $content;
+    return $content;
 }
+
 
 /**
  * Get the initialization vector from key

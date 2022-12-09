@@ -132,6 +132,8 @@ class Site extends Entity
 				$db->setDatabase($database['database']);
 				$query = $db->query($database['sql']);
 
+				// die(json_encode($query->getResult(), JSON_PRETTY_PRINT));
+
 				#map data
 				foreach ($query->getResult() as $row)
 				{
