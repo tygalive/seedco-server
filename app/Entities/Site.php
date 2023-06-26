@@ -132,17 +132,23 @@ class Site extends Entity
 				$db->setDatabase($database['database']);
 				$query = $db->query($database['sql']);
 
-				// die(json_encode($query->getResult(), JSON_PRETTY_PRINT));
-
+				#die(json_encode($query->getResult(), JSON_PRETTY_PRINT));
+				#die(var_dump($query->getResult()));
 				#map data
-				foreach ($query->getResult() as $row)
-				{
-					$rows[] = [
-						'quantity' => intval($row->QTYONHAND),
-						'price'    => floatval($row->UNITPRICE),
-						'location' => trim($row->LOCATION),
-						'sku'      => trim($row->ITEMNO),
-					];
+				if ($query === false) {
+					// Some error occurred while executing the query
+					// Handle the error appropriately, such as logging or displaying an error message
+					echo "Error executing the query.";
+				} else {
+					// Query executed successfully
+					foreach ($query->getResult() as $row) {
+						$rows[] = [
+							'quantity' => intval($row->QTYONHAND),
+							'price' => floatval($row->UNITPRICE),
+							'location' => trim($row->LOCATION),
+							'sku' => trim($row->ITEMNO),
+						];
+					}
 				}
 			}
 			catch (Exception $e)
