@@ -29,6 +29,7 @@
 	},
 	"require": {
 		"php": ">=7.4",
+		"ext-sqlsrv":"*",
 		"codeigniter4/framework": "^4.0",
 		"symfony/polyfill-php80": "^1.25",
 		"symfony/polyfill-php81": "^1.25",
